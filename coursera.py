@@ -6,19 +6,16 @@ from openpyxl.styles import Font
 
 
 def get_title(content):
-    class1 = ".title"
-    if content.select(class1):
-        return content.select(class1)[0].get_text()
-    elif content.select(class2):
-        return content.select(class2)[0].get_text()
+    if content.select(".title"):
+        return content.select(".title")[0].get_text()
     else:
-        return "Noname"
+        return "Без названия"
 
 
 def get_start_date(content):
     if content.find(id="start-date-string"):
         return content.find(id="start-date-string").span.get_text()
-    return "Without Date"
+    return "Без даты"
 
 
 def get_week_count(content):
@@ -29,36 +26,26 @@ def get_week_count(content):
 
 
 def get_rating(content):
-    temp = content.select(".ratings-text")
-    if temp:
-        return temp[0].span.get_text()
+    rating_div = content.select(".ratings-text")
+    if rating_div:
+        return rating_div[0].span.get_text()
     else:
-        return "Without Rating"
+        return "Без рейтинга"
 
 
-def fetch_courses_info():
+def fetch_courses_feed():
     url = "https://www.coursera.org/sitemap~www~courses.xml"
     feed = requests.get(url).text
     return xml.fromstring(feed)
 
 
-def get_links(parent):
-    return [child[0].text for child in parent]
-
-
-def handle_data(feed, links_to_handle=20):
-    root = feed
-    links = get_links(root[:links_to_handle])
-    courses_data = get_courses_data(links)
-    return courses_data
-
-
-def get_courses_data(links):
+def get_courses(feed, urls_to_handle=20):
+    urls = [child[0].text for child in feed[:urls_to_handle]]
     courses = []
-    for link in links:
+    for url in urls:
         course = {}
-        page = fetch_page(link)
-        page_content = web(page, 'html.parser')
+        page = fetch_page(url)
+        page_content = web(page, "html.parser")
         course["title"] = get_title(page_content)
         course["start_date"] = get_start_date(page_content)
         course["week_count"] = get_week_count(page_content)
@@ -93,9 +80,9 @@ def save_in_excel(courses, file_name):
 
 
 def main():
-    feed = fetch_courses_info()
-    data = handle_data(feed)
-    save_in_excel(data, "courses.xlsx")
+    feed = fetch_courses_feed()
+    courses = get_courses(feed)
+    save_in_excel(courses, "courses.xlsx")
 
 
 if __name__ == "__main__":
