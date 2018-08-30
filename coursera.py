@@ -6,30 +6,30 @@ from openpyxl.styles import Font
 
 
 def get_title(content):
-    if content.select(".title"):
+    try:
         return content.select(".title")[0].get_text()
-    else:
+    except:
         return None
 
 
 def get_start_date(content):
-    if content.find(id="start-date-string"):
+    try:
         return content.find(id="start-date-string").span.get_text()
-    return None
+    except:
+        return None
 
 
 def get_week_count(content):
-    if content.select(".week"):
+    try:
         return len(content.select(".week"))
-    else:
+    except:
         return None
 
 
 def get_rating(content):
-    rating_div = content.select(".ratings-text")
-    if rating_div:
-        return rating_div[0].span.get_text()
-    else:
+    try:
+        return content.select(".ratings-text")[0].span.get_text()
+    except:
         return None
 
 
