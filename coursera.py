@@ -52,18 +52,15 @@ def fetch_courses_feed():
     return xml.fromstring(feed)
 
 
-def get_courses(pages, urls_to_handle=3):
-    courses = []
-    for page in pages:
-        course = {}
-        page_content = web(page, "html.parser")
-        course["title"] = get_title(page_content)
-        course["start_date"] = get_start_date(page_content)
-        course["week_count"] = get_week_count(page_content)
-        course["avg_rating"] = get_rating(page_content)
-        course["language"] = get_language(page_content)
-        courses.append(course)
-    return courses
+def get_parsed_course(page):
+    course = {}
+    page_content = web(page, "html.parser")
+    course["title"] = get_title(page_content)
+    course["start_date"] = get_start_date(page_content)
+    course["week_count"] = get_week_count(page_content)
+    course["avg_rating"] = get_rating(page_content)
+    course["language"] = get_language(page_content)
+    return course
 
 
 def fetch_page(url):
@@ -102,10 +99,10 @@ def save_in_excel(workbook, filename):
 
 def main():
     feed = fetch_courses_feed()
-    urls_to_handle = 20
+    urls_to_handle = 3
     urls = [child[0].text for child in feed[:urls_to_handle]]
     pages = (fetch_page(url) for url in urls)
-    courses = get_courses(pages)
+    courses = (get_parsed_course(page) for page in pages)
     workbook = get_filled_workbook(courses)
     filename = get_arguments().filename
     save_in_excel(workbook, filename)
