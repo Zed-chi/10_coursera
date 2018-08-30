@@ -17,35 +17,33 @@ def get_arguments():
 def get_title(content):
     try:
         return content.select(".title")[0].get_text()
-    except:
+    except IndexError:
         return None
 
 
 def get_language(content):
     try:
         return content.select(".rc-Language")[0].get_text()
-    except:
+    except IndexError:
         return None
 
 
 def get_start_date(content):
     try:
         return content.find(id="start-date-string").span.get_text()
-    except:
+    except AttributeError:
         return None
 
 
 def get_week_count(content):
-    try:
-        return len(content.select(".week"))
-    except:
-        return None
+    return len(content.select(".week"))
+
 
 
 def get_rating(content):
     try:
         return content.select(".ratings-text")[0].span.get_text()
-    except:
+    except IndexError:
         return None
 
 
