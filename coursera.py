@@ -12,6 +12,13 @@ def get_title(content):
         return None
 
 
+def get_language(content):
+    try:
+        return content.select(".rc-Language")[0].get_text()
+    except:
+        return None
+
+
 def get_start_date(content):
     try:
         return content.find(id="start-date-string").span.get_text()
@@ -39,7 +46,7 @@ def fetch_courses_feed():
     return xml.fromstring(feed)
 
 
-def get_courses(feed, urls_to_handle=20):
+def get_courses(feed, urls_to_handle=3):
     urls = [child[0].text for child in feed[:urls_to_handle]]
     courses = []
     for url in urls:
@@ -51,6 +58,7 @@ def get_courses(feed, urls_to_handle=20):
         course["start_date"] = get_start_date(page_content)
         course["week_count"] = get_week_count(page_content)
         course["avg_rating"] = get_rating(page_content)
+        course["language"] = get_language(page_content)
         print("{} parsed".format(url))
         courses.append(course)
     return courses
@@ -69,15 +77,15 @@ def save_in_excel(courses, file_name):
     row = sheet.row_dimensions[1]
     row.font = Font(size=12, bold=True)
     sheet.title = "Список курсов"
-    sheet["A1"] = "Название курса"
-    sheet["B1"] = "Начало курса"
-    sheet["C1"] = "Кол.Недель"
-    sheet["D1"] = "Рейтинг"
-    for index in range(len(courses)):
-        sheet.cell(column=1, row=index+2, value=courses[index]["title"])
-        sheet.cell(column=2, row=index+2, value=courses[index]["start_date"])
-        sheet.cell(column=3, row=index+2, value=courses[index]["week_count"])
-        sheet.cell(column=4, row=index+2, value=courses[index]["avg_rating"])
+    sheet.append((
+        "Название курса",
+        "Начало курса",
+        "Кол.Недель",
+        "Рейтинг",
+        "Язык",
+    ))
+    for course in courses:
+        sheet.append(list(course.values()))
     wb.save(file_name)
     print("{} saved".format(file_name))
 
