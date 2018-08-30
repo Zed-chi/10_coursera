@@ -39,7 +39,6 @@ def get_week_count(content):
     return len(content.select(".week"))
 
 
-
 def get_rating(content):
     try:
         return content.select(".ratings-text")[0].span.get_text()
@@ -77,6 +76,7 @@ def fetch_page(link):
     res.encoding = "utf-8"
     return res.text
 
+
 def get_filled_workbook(courses):
     wb = openpyxl.Workbook()
     sheet = wb.active
@@ -93,7 +93,8 @@ def get_filled_workbook(courses):
     for course in courses:
         sheet.append(list(course.values()))
     return wb
-    
+
+
 def save_in_excel(workbook, filename):
     out_path = "{}{}".format(filename, ".xlsx")
     if os.path.exists(out_path):
