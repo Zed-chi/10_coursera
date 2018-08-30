@@ -13,7 +13,7 @@ $ pip install -r requirements.txt
 ```bash
 $ python coursera.py -f <output_filename>
 ```
-output will be in **<output_filename>.xls**
+output will be in **<output_filename>.xlsx**
 
 
 ### Project Goals
