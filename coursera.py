@@ -9,20 +9,20 @@ def get_title(content):
     if content.select(".title"):
         return content.select(".title")[0].get_text()
     else:
-        return "Без названия"
+        return None
 
 
 def get_start_date(content):
     if content.find(id="start-date-string"):
         return content.find(id="start-date-string").span.get_text()
-    return "Без даты"
+    return None
 
 
 def get_week_count(content):
     if content.select(".week"):
         return len(content.select(".week"))
     else:
-        return 0
+        return None
 
 
 def get_rating(content):
@@ -30,7 +30,7 @@ def get_rating(content):
     if rating_div:
         return rating_div[0].span.get_text()
     else:
-        return "Без рейтинга"
+        return None
 
 
 def fetch_courses_feed():
@@ -45,11 +45,13 @@ def get_courses(feed, urls_to_handle=20):
     for url in urls:
         course = {}
         page = fetch_page(url)
+        print("{} fetched".format(url))
         page_content = web(page, "html.parser")
         course["title"] = get_title(page_content)
         course["start_date"] = get_start_date(page_content)
         course["week_count"] = get_week_count(page_content)
         course["avg_rating"] = get_rating(page_content)
+        print("{} parsed".format(url))
         courses.append(course)
     return courses
 
@@ -77,6 +79,7 @@ def save_in_excel(courses, file_name):
         sheet.cell(column=3, row=index+2, value=courses[index]["week_count"])
         sheet.cell(column=4, row=index+2, value=courses[index]["avg_rating"])
     wb.save(file_name)
+    print("{} saved".format(file_name))
 
 
 def main():
