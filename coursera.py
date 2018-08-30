@@ -1,8 +1,17 @@
 import requests
 import openpyxl
+import argparse
+import os
 import xml.etree.ElementTree as xml
 from bs4 import BeautifulSoup as web
 from openpyxl.styles import Font
+
+
+def get_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", required=True, dest="filename")
+    args = parser.parse_args()
+    return args
 
 
 def get_title(content):
@@ -70,8 +79,7 @@ def fetch_page(link):
     res.encoding = "utf-8"
     return res.text
 
-
-def save_in_excel(courses, file_name):
+def get_filled_workbook(courses):
     wb = openpyxl.Workbook()
     sheet = wb.active
     row = sheet.row_dimensions[1]
@@ -86,14 +94,22 @@ def save_in_excel(courses, file_name):
     ))
     for course in courses:
         sheet.append(list(course.values()))
-    wb.save(file_name)
-    print("{} saved".format(file_name))
+    return wb
+    
+def save_in_excel(workbook, filename):
+    out_path = "{}{}".format(filename, ".xlsx")
+    if os.path.exists(out_path):
+        exit("File exists")
+    workbook.save(out_path)
+    print("{} saved".format(out_path))
 
 
 def main():
     feed = fetch_courses_feed()
     courses = get_courses(feed)
-    save_in_excel(courses, "courses.xlsx")
+    workbook = get_filled_workbook(courses)
+    filename = get_arguments().filename
+    save_in_excel(workbook, filename)
 
 
 if __name__ == "__main__":
