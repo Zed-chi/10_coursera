@@ -92,20 +92,24 @@ def get_filled_workbook(courses):
 def save_in_excel(workbook, filename):
     out_path = "{}{}".format(filename, ".xlsx")
     if os.path.exists(out_path):
-        exit("File exists")
+        return False
     workbook.save(out_path)
-    print("{} saved".format(out_path))
+    return True
 
 
 def main():
     feed = fetch_courses_feed()
-    urls_to_handle = 3
+    urls_to_handle = 20
     urls = [child[0].text for child in feed[:urls_to_handle]]
     pages = (fetch_page(url) for url in urls)
     courses = (get_parsed_course(page) for page in pages)
     workbook = get_filled_workbook(courses)
     filename = get_arguments().filename
-    save_in_excel(workbook, filename)
+    if save_in_excel(workbook, filename):
+        print("Saved in {}.xlsx!".format(filename))
+    else:
+        exit("File exists")
+    
 
 
 if __name__ == "__main__":
