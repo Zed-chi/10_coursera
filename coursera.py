@@ -108,8 +108,7 @@ def main():
     if save_in_excel(workbook, filename):
         print("Saved in {}.xlsx!".format(filename))
     else:
-        exit("File exists")
-    
+        exit("File exists")    
 
 
 if __name__ == "__main__":
